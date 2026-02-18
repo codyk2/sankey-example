@@ -1,26 +1,56 @@
 # sankey-example
 
-Minimal Sankey diagram examples in **R** and **Python**.
+Sankey diagram examples in **Python** and **R**, built for a class presentation on data visualization.
 
-## Files
+## Python — Superstore Sales (`sankey_example_plotly.py`)
 
-| File | Language | Library |
-|------|----------|---------|
-| `sankey_example.R` | R | [networkD3](https://cran.r-project.org/package=networkD3) |
-| `sankey_example_plotly.py` | Python | [Plotly](https://plotly.com/python/sankey-diagram/) |
+Uses the [Superstore Sales](https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting) dataset from Kaggle (9,800 transactions across the US).
 
-## Quick Start
+**Flow:** Customer Segment → Product Category → Sub-Category, weighted by sales revenue ($).
 
-### R
-```r
-install.packages("networkD3")
-source("sankey_example.R")
+- **3 Segments**: Consumer ($1.1M), Corporate ($688K), Home Office ($425K)
+- **3 Categories**: Technology, Furniture, Office Supplies — each color-coded (blue, green, red)
+- **17 Sub-Categories**: Phones, Chairs, Storage, Tables, Binders, Machines, etc.
+- Dollar values displayed on every node (Apple Income Statement style)
+- Dataset is downloaded automatically via `kagglehub`
+
+### Requirements
+
+```bash
+pip install plotly pandas kagglehub
 ```
 
-### Python
+### Run
+
 ```bash
-pip install plotly
 python sankey_example_plotly.py
 ```
 
-Both scripts visualize a simple energy-flow Sankey diagram (Solar / Wind / Hydro → Electricity → Residential / Commercial / Industrial).
+Opens an interactive Sankey diagram in your browser.
+
+## R — Energy Flow (`sankey_example.R`)
+
+A minimal hardcoded example using [networkD3](https://cran.r-project.org/package=networkD3).
+
+**Flow:** Energy Sources (Solar, Wind, Hydro) → Electricity → End Use (Residential, Commercial, Industrial), measured in TWh.
+
+### Requirements
+
+```r
+install.packages("networkD3")
+```
+
+### Run
+
+```r
+source("sankey_example.R")
+```
+
+Opens an interactive Sankey diagram in the RStudio Viewer or browser.
+
+## Dataset
+
+| File | Dataset | Source |
+|------|---------|--------|
+| `sankey_example_plotly.py` | Superstore Sales (9,800 rows) | [Kaggle](https://www.kaggle.com/datasets/rohitsahoo/sales-forecasting) |
+| `sankey_example.R` | Hardcoded energy flow example | N/A |
