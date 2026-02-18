@@ -8,6 +8,7 @@ import kagglehub
 import pandas as pd
 import plotly.graph_objects as go
 
+# Load dataset
 path = kagglehub.dataset_download("rohitsahoo/sales-forecasting")
 df = pd.read_csv(f"{path}/train.csv", encoding="latin-1")
 
@@ -19,13 +20,16 @@ def fmt(val):
     return f"${val / 1_000:,.0f}K"
 
 
+# Aggregate
 seg_cat = df.groupby(["Segment", "Category"])["Sales"].sum().reset_index()
 cat_sub = df.groupby(["Category", "Sub-Category"])["Sales"].sum().reset_index()
 
+# Pre-compute totals for labels
 seg_totals = df.groupby("Segment")["Sales"].sum()
 cat_totals = df.groupby("Category")["Sales"].sum()
 sub_totals = df.groupby("Sub-Category")["Sales"].sum()
 
+# Build node list
 segments = ["Consumer", "Corporate", "Home Office"]
 categories = ["Technology", "Furniture", "Office Supplies"]
 subcategories = sub_totals.sort_values(ascending=False).index.tolist()
@@ -39,6 +43,7 @@ node_labels = (
 all_names = segments + categories + subcategories
 node_index = {name: i for i, name in enumerate(all_names)}
 
+# Colors
 cat_solid = {
     "Technology":      "#4285F4",
     "Furniture":       "#34A853",
@@ -53,25 +58,30 @@ cat_transparent = {
 seg_colors = ["#6c757d", "#868e96", "#adb5bd"]
 cat_colors = [cat_solid[c] for c in categories]
 
+# Sub-category nodes inherit their parent category's color
 sub_parent = cat_sub.set_index("Sub-Category")["Category"]
 sub_colors = [cat_solid[sub_parent[s]] for s in subcategories]
 
 node_colors = seg_colors + cat_colors + sub_colors
 
+# Build links
 sources, targets, values, link_colors = [], [], [], []
 
+# Segment → Category
 for _, row in seg_cat.iterrows():
     sources.append(node_index[row["Segment"]])
     targets.append(node_index[row["Category"]])
     values.append(round(row["Sales"], 2))
     link_colors.append(cat_transparent[row["Category"]])
 
+# Category → Sub-Category
 for _, row in cat_sub.iterrows():
     sources.append(node_index[row["Category"]])
     targets.append(node_index[row["Sub-Category"]])
     values.append(round(row["Sales"], 2))
     link_colors.append(cat_transparent[row["Category"]])
 
+# Draw Sankey
 fig = go.Figure(go.Sankey(
     arrangement="snap",
     node=dict(
